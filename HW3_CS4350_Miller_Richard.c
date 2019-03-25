@@ -64,7 +64,7 @@ int validate(char* c, int *k, int which)
 	switch (which)
 	{
 	case 1:
-		status = scanf("%s", &c);
+		status = scanf("%s", c);
 		while ((temp = getchar()) != EOF && temp != '\n');
 		if (status != 1)
 		{
@@ -108,14 +108,17 @@ int validate(char* c, int *k, int which)
 
 int main()
 {
+	char choice[255];
+	char message[255];
+	int *key;
+	int which;
 	int keepLooping = 1;
 	printf("Welcome to cryptography\n\n");
 	while (keepLooping == 1)
 	{
-		char choice[255];
-		char message[255];
-		int *key;
-		int which = 0;
+		choice = "";
+		message = "";
+		which = 0;
 		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
 		which = validate(choice, key, 1);
 		if (which == 0)
