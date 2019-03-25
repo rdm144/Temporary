@@ -94,7 +94,7 @@ void encrypt(char* message, int key)
 	{
 		encrypted[i] = ray[i][1];
 	}
-	printf("\nThe decrypted text is:\n%s\n", encrypted);
+	printf("\nThe decrypted text is:\n%s\n", ray[][1]);
 
 	char combo[length*2];
 	for (int i = 0; i < length*2; i++)
