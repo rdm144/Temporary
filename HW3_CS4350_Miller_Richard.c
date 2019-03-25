@@ -14,8 +14,6 @@ Due Date: 3/27/2019
 void encrypt(char* message, int key)
 {
 	unsigned char temp[] = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,!,34,#,$,%,&,',(,),*,+,44,-,.,/,:,;,<,=,>,?,@,[,92,],^,_,`,{,|,},~";
-	unsigned char ray[255][2];
-
 	int length = 0;
 	for (int i = 0; i < 255; i++)
 	{
@@ -24,16 +22,18 @@ void encrypt(char* message, int key)
 		else
 			length++;
 	}
+
+	unsigned char ray[length][2];
 	for (int i = 0; i < length; i++)
 	{
 		for (int j = 0; j < 94; j++)
 		{
 			if (message[i] == temp[j])
 			{
+				ray[i][0] = message[i];
 				int offset = j + key;
 				if (offset > 93)
 					offset = offset - 93;
-				ray[i][0] = message[i];
 				ray[i][1] = temp[offset];
 				break;
 			}
@@ -45,26 +45,31 @@ void encrypt(char* message, int key)
 		if (message[i] > 64 && message[i] < 91)
 			capitals++;
 	printf("\nNumber of Capital Letters: %i", capitals);
+
 	int lowerCase = 0;
 	for (int i = 0; i < length; i++)
-		if (message[i] > 97 && message[i] < 123)
+		if (message[i] > 96 && message[i] < 123)
 			lowerCase++;
 	printf("\nNumber of Small Letters: %i", lowerCase);
+
 	int digitCount = 0;
 	for (int i = 0; i < length; i++)
 		if (message[i] > 47 && message[i] < 58)
 			digitCount++;
 	printf("\nNumber of Digits: %i", digitCount);
+
 	int symbols = 0;
 	for (int i = 0; i < length; i++)
 	{
-		for (int j = 61; j < 94; j++)
+		for (int j = 62; j < 94; j++)
 			if (message[i] == temp[j])
 				symbols++;
 	}
 	printf("\nNumber of Symbols: %i", symbols);
+
 	int numChar = length;
 	printf("\nNumber of Characters in the message: %i", numChar);
+
 	char lowerCaseMessage[length];
 	for (int i = 0; i < length; i++)
 	{
@@ -74,12 +79,14 @@ void encrypt(char* message, int key)
 			lowerCaseMessage[i] = message[i];
 	}
 	printf("\nConverting Letters: %s", lowerCaseMessage);
+
 	char encrypted[length];
 	for (int i = 0; i < length; i++)
 	{
 		encrypted[i] = ray[i][1];
 	}
 	printf("\nThe decrypted text is:\n%s\n", encrypted);
+
 	char combo[length*2];
 	for (int i = 0; i < length*2; i++)
 	{
