@@ -13,13 +13,24 @@ Due Date: 3/27/2019
 
 void encrypt(char* message, int key)
 {
-	char ray[255][191];
 	char temp[191] = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,!,34,#,$,%,&,',(,),*,+,44,-,.,/,:,;,<,=,>,?,@,[,92,],^,_,`,{,|,},~";
 	int length = sizeof(message) / sizeof(message[0]);
-	
-	for (int i = 0; i < length; i++) // combine message and list to double array
-		for (int j = 0; j < 191, j++)
-			ray[i][j] = { message[i], temp[j] };
+	char ray[length][2];
+
+	for (int i = 0; i < length; i++)
+	{
+		for (int j = 0; j < 191; j++)
+		{
+			if (message[i] == temp[j])
+			{
+				int offset = j + key;
+				if (offset > 190)
+					offset = offset - 190;
+				ray[i][0] = message[i];
+				ray[i][1] = temp[offset];
+			}
+		}
+	}
 
 	int capitals = 0;
 	for (int i = 0; i < length; i++)
@@ -58,16 +69,7 @@ void encrypt(char* message, int key)
 	char encrypted[length];
 	for (int i = 0; i < length; i++)
 	{
-		for (int j = 0; j < 191; j++)
-		{
-			if (message[i] == temp[j])
-			{
-				int offset = j + key;
-				if (offset > 190)
-					offset = offset - 190;
-				encrypted[i] = temp[offset];
-			}
-		}
+		encrypted[i] = ray[i][0];
 	}
 	printf("\nThe decrypted text is:\n%s\n", encrypted);
 	char combo[255];
