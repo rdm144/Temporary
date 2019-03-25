@@ -80,9 +80,17 @@ int validate(char* choice, int key)
 
 int main()
 {
-	char thing[255];
-	printf("enter a thing ");
-	scanf("%s", thing);
+	int input, temp, status;
+
+	printf("Please enter a number: ");
+	status = scanf("%d", &input);
+	while (status != 1) {
+		while ((temp = getchar()) != EOF && temp != '\n');
+		printf("Invalid input... please enter a number: ");
+		status = scanf("%d", &input);
+	}
+
+	printf("Your number is %d\n", input);
   /*
   int keepLooping = 1;
   printf("Welcome to cryptography\n\n");
