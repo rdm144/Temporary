@@ -83,9 +83,12 @@ int main()
 	int key;
 	int status;
 	int temp;
-	int isEncrypt = 1;
-	int isDecrypt = 1;
-	int isExit = 1;
+	int isEncrypt;
+	int isDecrypt;
+	int isExit;
+	isEncrypt = 1;
+	isDecrypt = 1;
+	isExit = 1;
 
     printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
 	status = scanf("%s", &choice);
