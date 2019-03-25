@@ -13,21 +13,22 @@ Due Date: 3/27/2019
 
 void encrypt(char* message, int key)
 {
-	char temp[191] = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,!,34,#,$,%,&,',(,),*,+,44,-,.,/,:,;,<,=,>,?,@,[,92,],^,_,`,{,|,},~";
+	char temp[] = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,!,34,#,$,%,&,',(,),*,+,44,-,.,/,:,;,<,=,>,?,@,[,92,],^,_,`,{,|,},~";
 	int length = sizeof(message) / sizeof(message[0]);
 	char ray[length][2];
 
 	for (int i = 0; i < length; i++)
 	{
-		for (int j = 0; j < 191; j++)
+		for (int j = 0; j < 94; j++)
 		{
 			if (message[i] == temp[j])
 			{
 				int offset = j + key;
-				if (offset > 190)
-					offset = offset - 190;
+				if (offset > 93)
+					offset = offset - 93;
 				ray[i][0] = message[i];
 				ray[i][1] = temp[offset];
+				break;
 			}
 		}
 	}
@@ -50,7 +51,8 @@ void encrypt(char* message, int key)
 	int symbols = 0;
 	for (int i = 0; i < length; i++)
 	{
-		for (int j = 26 + 26 + 10 - 1; j < 191; j++)
+		for (int j = 61; j < 94; j++)
+		{ }
 			if (message[i] == temp[j])
 				symbols++;
 	}
