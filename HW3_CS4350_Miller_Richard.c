@@ -11,7 +11,7 @@ Due Date: 3/27/2019
 
 #include <stdio.h>
 
-void encrypt(char* message, int *key)
+void encrypt(char* message, int key)
 {
 	int capitals = 0;
 	printf("\nNumber of Capital Letters: %i", capitals);
@@ -28,10 +28,10 @@ void encrypt(char* message, int *key)
 	char encrypted[255] = "encrypted";
 	printf("\nThe decrypted text is:\n%s\n", encrypted);
 	char combo[255] = "combo";
-	printf("Concatenation of original and encrypted text: %s\n\n", combo);
+	printf("\nConcatenation of original and encrypted text: %s\n\n\n", combo);
 }
 
-void decrypt(char* message, int *key)
+void decrypt(char* message, int key)
 {
 	int capitals = 0;
 	printf("\nNumber of Capital Letters: %i", capitals);
@@ -46,7 +46,7 @@ void decrypt(char* message, int *key)
 	char lowerCaseMessage[255] = "lowercase message";
 	printf("\nConverting Letters: %s", lowerCaseMessage);
 	char decrypted[255] = "encrypted";
-	printf("\nThe encrypted text is:\n%s\n", decrypted);
+	printf("\n\nYour encrypted text is:\n%s\n", decrypted);
 	char combo[255] = "combo";
 	printf("Concatenation of original and encrypted text: %s\n\n", combo);
 }
@@ -68,7 +68,7 @@ int validate(char* choice, int *k, int which)
 		while ((temp = getchar()) != EOF && temp != '\n');
 		if (status != 1)
 		{
-			printf("Invalid message\n");
+			printf("Invalid message\n\n");
 			return 0;
 		}
 		for (int i = 0; i < 7; i++)
@@ -95,10 +95,9 @@ int validate(char* choice, int *k, int which)
 		while ((temp = getchar()) != EOF && temp != '\n');
 		if (status != 1)
 		{
-			printf("Invalid message\n");
+			printf("Invalid Key number\n\n");
 			return 0;
 		}
-		printf("Let's go\n");
 		if (*k < 1 || *k > 95)
 			return 0;
 		else
@@ -118,8 +117,8 @@ int main()
 		char choice[255];
 		char message[255];
 		which = 0;
-		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
-		which = validate(choice, key, 1);
+		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice:  ");
+		which = validate(choice, &key, 1);
 		if (which == 0)
 		{
 			printf("Invalid message\n");
