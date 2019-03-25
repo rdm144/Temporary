@@ -120,13 +120,23 @@ int main()
 		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
 		which = validate(choice, key, 1);
 		if (which == 0)
+		{
+			printf("Invalid message\n");
 			continue;
+		}
+		else if (which == 3)
+			break;
+
 		printf("Enter your message:\n");
 		scanf("%s", &message);
 		printf("Enter the key number(1-95)\n");
 		if (validate(choice, key, 2) != 1)
+		{
+			printf("Invalid key\n");
 			continue;
+		}
 
+		printf("Let's go\n");
 		if (which == 1)
 			encrypt(message, key);
 		else if (which == 2)
