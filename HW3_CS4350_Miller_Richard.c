@@ -13,10 +13,17 @@ Due Date: 3/27/2019
 
 void encrypt(char* message, int key)
 {
-	char temp[] = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,!,34,#,$,%,&,',(,),*,+,44,-,.,/,:,;,<,=,>,?,@,[,92,],^,_,`,{,|,},~";
-	int length = sizeof(message) / sizeof(message[0]);
-	char ray[length][2];
+	unsigned char temp[] = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,!,34,#,$,%,&,',(,),*,+,44,-,.,/,:,;,<,=,>,?,@,[,92,],^,_,`,{,|,},~";
+	unsigned char ray[255][2];
 
+	int length = 0;
+	for (int i = 0; i < 255; i++)
+	{
+		if (message[i] == 0)
+			break;
+		else
+			length++;
+	}
 	for (int i = 0; i < length; i++)
 	{
 		for (int j = 0; j < 94; j++)
@@ -52,7 +59,6 @@ void encrypt(char* message, int key)
 	for (int i = 0; i < length; i++)
 	{
 		for (int j = 61; j < 94; j++)
-		{ }
 			if (message[i] == temp[j])
 				symbols++;
 	}
@@ -168,8 +174,8 @@ int main()
 	printf("Welcome to cryptography\n\n");
 	while (keepLooping == 1)
 	{
-		char choice[255];
-		char message[255];
+		unsigned char choice[255] = { 0 };
+		unsigned char message[255] = { 0 };
 		which = 0;
 		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice:  ");
 		which = validate(choice, &key, 1);
