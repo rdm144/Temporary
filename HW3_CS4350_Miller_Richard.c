@@ -182,16 +182,27 @@ int validate(char* choice, int *k, int which)
 	}
 }
 
+void clearMessageAndChoice(char* choice, char* message)
+{
+	for (int i = 0; i < 255; i++)
+	{
+		choice[i] = 0;
+		message[i] = 0;
+	}
+}
+
 int main()
 {
 	int key;
 	int which;
+	unsigned char choice[255];
+	unsigned char message[255];
 	int keepLooping = 1;
 	printf("Welcome to cryptography\n\n");
 	while (keepLooping == 1)
 	{
-		unsigned char choice[255] = { 0 };
-		unsigned char message[255] = { 0 };
+		clearMessageAndChoice(choice, message);
+		key = 0;
 		which = 0;
 		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice:  ");
 		which = validate(choice, &key, 1);
