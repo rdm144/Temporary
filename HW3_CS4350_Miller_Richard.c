@@ -77,16 +77,35 @@ int main()
   {
 	char choice[255];
 	char message[255];
-	int key = 1;
+	int key;
+	int status;
 
     printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
-	scanf("%s", choice);
+	status = scanf("%s", &choice);
+	while (status != 1)
+	{
+		while ((temp = getchar()) != EOF && temp != '\n');
+		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
+		status = scanf("%s", &choice);
+	}
 
     printf("Enter your message:\n");
-	scanf("%s", message);
+	status = scanf("%s", &message);
+	while (status != 1)
+	{
+		while ((temp = getchar()) != EOF && temp != '\n');
+		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
+		status = scanf("%s", &message);
+	}
 
     printf("Enter the key number(1-95)\n");
-	scanf("%d", key);
+	status = scanf("%d", &key);
+	while (status != 1)
+	{
+		while ((temp = getchar()) != EOF && temp != '\n');
+		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
+		status = scanf("%d", &key);
+	}
 
     if(choice == "encrypt")
       encrypt(message, key);
