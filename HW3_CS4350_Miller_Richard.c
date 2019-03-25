@@ -59,21 +59,18 @@ int validate(char* c, int *k, int which)
 	int isEncrypt = 1;
 	int isDecrypt = 1;
 	int isExit = 1;
-	
+	int status;
+	char temp;
 	switch (which)
 	{
 	case 1:
-		int status;
 		status = scanf("%s", &c);
-		char temp;
 		while ((temp = getchar()) != EOF && temp != '\n');
-
 		if (status != 1)
 		{
 			printf("Invalid message\n");
 			return 0;
 		}
-
 		for (int i = 0; i < 7; i++)
 			if (c[i] != en[i])
 				isEncrypt = 0;
@@ -87,23 +84,21 @@ int validate(char* c, int *k, int which)
 		if (isEncrypt == 1)
 			return 1;
 		else if (isDecrypt == 1)
-			return 2
+			return 2;
 		else if (isExit == 1)
 			return 3;
 		else
 			return 0;
 			break;
 	case 2:
-		int status;
 		status = scanf("%d", k);
-		char temp;
 		while ((temp = getchar()) != EOF && temp != '\n');
 		if (status != 1)
 		{
 			printf("Invalid message\n");
 			return 0;
 		}
-		if (k < 1 || k > 95)
+		if (*k < 1 || *k > 95)
 			return 0;
 		else
 			return 1;
@@ -125,10 +120,8 @@ int main()
 		which = validate(choice, key, 1);
 		if (which == 0)
 			continue;
-
 		printf("Enter your message:\n");
 		scanf("%s", &c);
-
 		printf("Enter the key number(1-95)\n");
 		if (validate(choice, key, 2) != 1)
 			continue;
