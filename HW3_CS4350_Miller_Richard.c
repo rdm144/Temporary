@@ -53,7 +53,7 @@ void decrypt(char* message, int key)
 
 int validate(char* choice, int key)
 {
-  if(choice == '\0')
+  if(choice == "\0")
 	if(scanf("%s", choice) != 1)
 	{
 	  printf("Invalid message");
@@ -64,6 +64,12 @@ int validate(char* choice, int key)
     printf("Invalid message");
     return 0;
   }
+  if (key == -1)
+    if (scanf("%s", choice) != 1)
+    {
+      printf("Invalid key");
+	  return 0;
+	}
   if (key < 1 || key > 95)
   {
 	printf("Invalid Key");
@@ -78,7 +84,7 @@ int main()
   printf("Welcome to cryptography\n\n");
   while(keepLooping == 1)
   {
-	char choice[255] = '\0';
+	char choice[255] = "\0";
 	char message[255];
 	int key = 1;
 
@@ -89,10 +95,10 @@ int main()
     printf("Enter your message:\n");
 	scanf("%s", message);
 
+	key = -1;
     printf("Enter the key number(1-95)\n");
-	scanf("%d", &key);
 	if (validate(choice, key) != 1)
-	  continue;
+		continue;
 
     if(choice == "encrypt")
       encrypt(message, key);
