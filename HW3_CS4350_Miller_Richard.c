@@ -80,6 +80,10 @@ int validate(char* choice, int key)
 
 int main()
 {
+	char thing[255];
+	printf("enter a thing ");
+	scanf("%s", thing);
+  /*
   int keepLooping = 1;
   printf("Welcome to cryptography\n\n");
   while(keepLooping == 1)
@@ -108,4 +112,5 @@ int main()
       keepLooping = 0;
   }
   printf("Richard Miller Security Systems\n3-27-2019");
+  */
 }
