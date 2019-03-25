@@ -63,7 +63,8 @@ int validate(char* c, int *k, int which)
 	switch (which)
 	{
 	case 1:
-		int status = scanf("%s", &c);
+		int status;
+		status = scanf("%s", &c);
 		char temp;
 		while ((temp = getchar()) != EOF && temp != '\n');
 
@@ -93,7 +94,8 @@ int validate(char* c, int *k, int which)
 			return 0;
 			break;
 	case 2:
-		int status = scanf("%d", k);
+		int status;
+		status = scanf("%d", k);
 		char temp;
 		while ((temp = getchar()) != EOF && temp != '\n');
 		if (status != 1)
