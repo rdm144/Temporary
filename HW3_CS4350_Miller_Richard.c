@@ -61,8 +61,17 @@ void encrypt(char* message, int key)
 	int symbols = 0;
 	for (int i = 0; i < length; i++)
 	{
-		for (int j = 62; j < 94; j++)
-			if (message[i] == temp[j])
+		for (int j = 33; j < 48; j++)
+			if (message[i] == j)
+				symbols++;
+		for (int j = 58; j < 65; j++)
+			if (message[i] == j)
+				symbols++;
+		for (int j = 91; j < 97; j++)
+			if (message[i] == j)
+				symbols++;
+		for (int j = 123; j < 127; j++)
+			if (message[i] == j)
 				symbols++;
 	}
 	printf("\nNumber of Symbols: %i", symbols);
