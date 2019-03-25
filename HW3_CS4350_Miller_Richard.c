@@ -51,23 +51,25 @@ void decrypt(char* message, int key)
   printf("Concatenation of original and encrypted text: %s\n\n", combo);
 }
 
-int validateChoice(char* choice)
+int validate(char* choice, int key)
 {
-  if(scanf("%s", choice) != 1 || (choice != "encrypt" && choice != "decrypt" && choice != "exit"))
+  if(choice == '\0')
+	if(scanf("%s", choice) != 1)
+	{
+	  printf("Invalid message");
+	  return 0;
+	}
+  if(choice != "encrypt" && choice != "decrypt" && choice != "exit")
   {
     printf("Invalid message");
     return 0;
   }
-  else
-    return 1;
-}
-
-int validateKey(int key)
-{
-  if(key < 1 || key > 95)
-    return 0;
-  else
-    return 1;
+  if (key < 1 || key > 95)
+  {
+	printf("Invalid Key");
+	return 0;
+  }
+  return 1;
 }
 
 int main()
@@ -76,29 +78,28 @@ int main()
   printf("Welcome to cryptography\n\n");
   while(keepLooping == 1)
   {
-    int valid = 0;
+	char choice[255] = '\0';
+	char message[255];
+	int key = 1;
+
     printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
-    char choice[255]; valid = validateChoice(choice);
+	if (validate(choice, key) != 1)
+	  continue;
+
     printf("Enter your message:\n");
-    char message[255]; scanf("%s", message);
+	scanf("%s", message);
+
     printf("Enter the key number(1-95)\n");
-    int key; scanf("%d", &key);
+	scanf("%d", &key);
+	if (validate(choice, key) != 1)
+	  continue;
+
     if(choice == "encrypt")
-    {
       encrypt(message, key);
-    }
     else if(choice == "decrypt")
-    {
       decrypt(message, key);
-    }
     else if(choice == "exit")
-    {
       keepLooping = 0;
-    }
-    else
-    {
-      
-    }
   }
   printf("Richard Miller Security Systems\n3-27-2019");
 }
