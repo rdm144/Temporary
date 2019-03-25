@@ -51,7 +51,7 @@ void decrypt(char* message, int *key)
 	printf("Concatenation of original and encrypted text: %s\n\n", combo);
 }
 
-int validate(char* c, int *k, int which)
+int validate(char* choice, int *k, int which)
 {
 	char en[] = "encrypt";
 	char de[] = "decrypt";
@@ -64,7 +64,7 @@ int validate(char* c, int *k, int which)
 	switch (which)
 	{
 	case 1:
-		status = scanf("%s", c);
+		status = scanf("%s", choice);
 		while ((temp = getchar()) != EOF && temp != '\n');
 		if (status != 1)
 		{
@@ -108,16 +108,14 @@ int validate(char* c, int *k, int which)
 
 int main()
 {
-	char choice[255];
-	char message[255];
 	int *key;
 	int which;
 	int keepLooping = 1;
 	printf("Welcome to cryptography\n\n");
 	while (keepLooping == 1)
 	{
-		choice = "";
-		message = "";
+		char choice[255];
+		char message[255];
 		which = 0;
 		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
 		which = validate(choice, key, 1);
