@@ -72,13 +72,13 @@ int validate(char* choice, int *k, int which)
 			return 0;
 		}
 		for (int i = 0; i < 7; i++)
-			if (c[i] != en[i])
+			if (choice[i] != en[i])
 				isEncrypt = 0;
 		for (int i = 0; i < 7; i++)
-			if (c[i] != de[i])
+			if (choice[i] != de[i])
 				isDecrypt = 0;
 		for (int i = 0; i < 4; i++)
-			if (c[i] != ex[i])
+			if (choice[i] != ex[i])
 				isExit = 0;
 
 		if (isEncrypt == 1)
@@ -122,7 +122,7 @@ int main()
 		if (which == 0)
 			continue;
 		printf("Enter your message:\n");
-		scanf("%s", &c);
+		scanf("%s", &message);
 		printf("Enter the key number(1-95)\n");
 		if (validate(choice, key, 2) != 1)
 			continue;
