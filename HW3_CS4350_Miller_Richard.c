@@ -60,8 +60,8 @@ void encrypt(char* message, int key)
 	char lowerCaseMessage[length];
 	for (int i = 0; i < length; i++)
 	{
-		if (message[i] > 97 && message[i] < 123)
-			lowerCaseMessage[i] = message[i] - 32;
+		if (message[i] > 64 && message[i] < 91)
+			lowerCaseMessage[i] = message[i] + 32;
 		else
 			lowerCaseMessage[i] = message[i];
 	}
@@ -69,11 +69,11 @@ void encrypt(char* message, int key)
 	char encrypted[length];
 	for (int i = 0; i < length; i++)
 	{
-		encrypted[i] = ray[i][0];
+		encrypted[i] = ray[i][1];
 	}
 	printf("\nThe decrypted text is:\n%s\n", encrypted);
-	char combo[255];
-	for (int i = 0; i < 255; i++)
+	char combo[length*2];
+	for (int i = 0; i < length*2; i++)
 	{
 		if (i < length)
 			combo[i] = message[i];
