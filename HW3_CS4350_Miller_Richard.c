@@ -1,11 +1,8 @@
 /*
 NAME: Richard Miller	CS4350-Unix Systems Programming
 Serial Number: 36
-
 Group Number:
-
 Assignment Number: 3
-
 Due Date: 3/27/2019
 */
 
@@ -13,7 +10,7 @@ Due Date: 3/27/2019
 
 void encrypt(char* message, int key)
 {
-	unsigned char temp[] = { 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','0','1','2','3','4','5','6','7','8','9','!',34,'#','$','%','&',39,'(',')','*','+',44,'-','.','/',':',';','<','=','>','?','@','[',92,']','^','_','`','{','|','}','~' };
+	char temp[] = { 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','0','1','2','3','4','5','6','7','8','9','!',34,'#','$','%','&',39,'(',')','*','+',44,'-','.','/',':',';','<','=','>','?','@','[',92,']','^','_','`','{','|','}','~' };
 	int length = 0;
 	for (int i = 0; i < 255; i++)
 	{
@@ -23,8 +20,8 @@ void encrypt(char* message, int key)
 			length++;
 	}
 
-	unsigned char ray[length][2];
-	for (int i = 0; i < length; i++)
+	char ray[255][2];
+	for (int i = 0; i < 255; i++)
 	{
 		for (int j = 0; j < 94; j++)
 		{
@@ -41,25 +38,25 @@ void encrypt(char* message, int key)
 	}
 
 	int capitals = 0;
-	for (int i = 0; i < length; i++)
+	for (int i = 0; i < 255; i++)
 		if (message[i] > 64 && message[i] < 91)
 			capitals++;
 	printf("\nNumber of Capital Letters: %i", capitals);
 
 	int lowerCase = 0;
-	for (int i = 0; i < length; i++)
+	for (int i = 0; i < 255; i++)
 		if (message[i] > 96 && message[i] < 123)
 			lowerCase++;
 	printf("\nNumber of Small Letters: %i", lowerCase);
 
 	int digitCount = 0;
-	for (int i = 0; i < length; i++)
+	for (int i = 0; i < 255; i++)
 		if (message[i] > 47 && message[i] < 58)
 			digitCount++;
 	printf("\nNumber of Digits: %i", digitCount);
 
 	int symbols = 0;
-	for (int i = 0; i < length; i++)
+	for (int i = 0; i < 255; i++)
 	{
 		for (int j = 33; j < 48; j++)
 			if (message[i] == j)
@@ -79,31 +76,45 @@ void encrypt(char* message, int key)
 	int numChar = length;
 	printf("\nNumber of Characters in the message: %i", numChar);
 
-	char lowerCaseMessage[length];
-	for (int i = 0; i < length; i++)
+	char lowerCaseMessage[255];
+	for (int i = 0; i < 255; i++)
 	{
+                lowerCaseMessage[i] = message[i];
 		if (message[i] > 64 && message[i] < 91)
-			lowerCaseMessage[i] = message[i] + 32;
-		else
-			lowerCaseMessage[i] = message[i];
+			lowerCaseMessage[i] += 'a' - 'A';
 	}
 	printf("\nConverting Letters: %s", lowerCaseMessage);
 
-	char encrypted[length];
-	for (int i = 0; i < length; i++)
+	char encrypted[255];
+	for (int i = 0; i < 255; i++)
 	{
-		encrypted[i] = ray[i][1];
+                encrypted[i] = ray[i][1];
+           printf("%c", ray[i][1]);
 	}
-	printf("\nThe decrypted text is:\n%s\n", ray[][1]);
+	printf("\nThe decrypted text is:\n%s\n", encrypted);
 
-	char combo[length*2];
-	for (int i = 0; i < length*2; i++)
+	char combo[510];
+        int index = 0;
+	for (int i = 0; i < 255; i++)
 	{
-		if (i < length)
-			combo[i] = message[i];
-		else
-			combo[i] = encrypted[i];
-	}
+            if(message[i] != 0)
+            {
+                combo[i] = message[i];
+                index++;
+            }
+            else
+                break;
+        }
+        for(int i = 0; i < 255; i++)
+        {
+            int newIndex = index + i;
+            if(encrypted[i] != 0)
+            {
+                combo[newIndex] = encrypted[i];
+            }
+            else
+                break;
+        }
 	printf("\nConcatenation of original and encrypted text: %s\n\n\n", combo);
 }
 
@@ -195,8 +206,8 @@ int main()
 {
 	int key;
 	int which;
-	unsigned char choice[255];
-	unsigned char message[255];
+	char choice[255];
+	char message[255];
 	int keepLooping = 1;
 	printf("Welcome to cryptography\n\n");
 	while (keepLooping == 1)
@@ -215,7 +226,7 @@ int main()
 			break;
 
 		printf("\nEnter your message:\n");
-		scanf("%s", &message);
+		int temp = scanf("%s", message);
 		printf("Enter the key number(1-95)\n");
 		if (validate(choice, &key, 2) != 1)
 		{
