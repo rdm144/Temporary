@@ -57,7 +57,7 @@ int validate(char* choice, int key)
   {
 	int status;
 	int temp;
-	status = scanf("%s", &choice);
+	status = scanf("%s", choice);
 	while ((temp = getchar()) != EOF && temp != '\n');
 	if (status != 1)
 	{
