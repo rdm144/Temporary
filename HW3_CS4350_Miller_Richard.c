@@ -47,7 +47,6 @@ void encrypt(char* message, int key)
 		temp[tIndex] = i;
 		tIndex++;
 	}
-	printf("\ntemp: %s", temp);
 	
 	char ray[255][2];
 	for (int i = 0; i < 255; i++)
@@ -68,9 +67,6 @@ void encrypt(char* message, int key)
 			}
 		}
 	}
-
-	for(int i = 0; i < 255; i++)
-		printf("%c, ", ray);
 
 	int capitals = 0;
 	for (int i = 0; i < 255; i++)
@@ -118,65 +114,150 @@ void encrypt(char* message, int key)
 	}
 	printf("\nNumber of Characters in the message: %i", numChar);
 
-	char lowerCaseMessage[255];
-	for (int i = 0; i < 255; i++)
-	{
-         lowerCaseMessage[i] = message[i];
-		 if (message[i] > 64 && message[i] < 91)
-			 lowerCaseMessage[i] += 'a' - 'A';
-	}
-	printf("\nConverting Letters: %s", lowerCaseMessage);
-
-	char encrypted[255];
-	for (int i = 0; i < 255; i++)
-	{
-           encrypted[i] = ray[i][1];
-	}
-	printf("\nThe decrypted text is:\n%s\n", encrypted);
-
-	char combo[510];
-        int index = 0;
-	for (int i = 0; i < 255; i++)
-	{
-            if(message[i] != 0)
-            {
-                combo[i] = message[i];
-                index++;
-            }
-            else
-                break;
-        }
-        for(int i = 0; i < 255; i++)
+	printf("\nConverting Letters: ");
+        for(int i = 0; i < numChar; i++)
         {
-            int newIndex = index + i;
-            if(encrypted[i] != 0)
-            {
-                combo[newIndex] = encrypted[i];
-            }
+            if(ray[i][0] > 64 && ray[i][0] < 91)
+                printf("%c", ray[i][0] + ('a'-'A'));
             else
-                break;
+                printf("%c", ray[i][0]);
         }
-	printf("\nConcatenation of original and encrypted text: %s\n\n\n", combo);
+
+        printf("\nThe decrypted text is:\n");
+        for (int i = 0; i < numChar; i++)
+		printf("%c", ray[i][1]);
+	printf("\n\nConcatenation of original and encrypted text: ");
+        for(int i = 0; i < numChar; i++)
+            printf("%c", ray[i][0]);
+        for (int i = 0; i < numChar; i++)
+	    printf("%c", ray[i][1]);
+        printf("\n\n\n");
 }
 
 void decrypt(char* message, int key)
 {
+	char temp[94];
+	int tIndex = 0;
+	for (int i = 65; i < 91; i++)
+	{
+		temp[tIndex] = i;
+		tIndex++;
+	}
+	for (int i = 97; i < 123; i++)
+	{
+		temp[tIndex] = i;
+		tIndex++;
+	}
+	for (int i = 48; i < 58; i++)
+	{
+		temp[tIndex] = i;
+		tIndex++;
+	}
+	for (int i = 33; i < 48; i++)
+	{
+		temp[tIndex] = i;
+		tIndex++;
+	}
+	for (int i = 58; i < 65; i++)
+	{
+		temp[tIndex] = i;
+		tIndex++;
+	}
+	for (int i = 91; i < 97; i++)
+	{
+		temp[tIndex] = i;
+		tIndex++;
+	}
+	for (int i = 123; i < 127; i++)
+	{
+		temp[tIndex] = i;
+		tIndex++;
+	}
+	
+	char ray[255][2];
+	for (int i = 0; i < 255; i++)
+		if (message[i] != 0)
+			ray[i][0] = message[i];
+		else
+			break;
+	for (int i = 0; i < 255; i++)
+	{
+		for (int j = 0; j < 94; j++)
+		{
+			if(message[i] == temp[j] && message[i] != 0)
+			{
+				int offset = j - key;
+				if (offset < 0)
+					offset += 93;
+				ray[i][1] = temp[offset];
+			}
+		}
+	}
+
 	int capitals = 0;
+	for (int i = 0; i < 255; i++)
+		if (message[i] > 64 && message[i] < 91)
+			capitals++;
 	printf("\nNumber of Capital Letters: %i", capitals);
+
 	int lowerCase = 0;
+	for (int i = 0; i < 255; i++)
+		if (message[i] > 96 && message[i] < 123)
+			lowerCase++;
 	printf("\nNumber of Small Letters: %i", lowerCase);
+
 	int digitCount = 0;
+	for (int i = 0; i < 255; i++)
+		if (message[i] > 47 && message[i] < 58)
+			digitCount++;
 	printf("\nNumber of Digits: %i", digitCount);
+
 	int symbols = 0;
+	for (int i = 0; i < 255; i++)
+	{
+		for (int j = 33; j < 48; j++)
+			if (message[i] == j)
+				symbols++;
+		for (int j = 58; j < 65; j++)
+			if (message[i] == j)
+				symbols++;
+		for (int j = 91; j < 97; j++)
+			if (message[i] == j)
+				symbols++;
+		for (int j = 123; j < 127; j++)
+			if (message[i] == j)
+				symbols++;
+	}
 	printf("\nNumber of Symbols: %i", symbols);
+
 	int numChar = 0;
+	for (int i = 0; i < 255; i++)
+	{
+		if (message[i] == 0)
+			break;
+		else
+			numChar++;
+	}
 	printf("\nNumber of Characters in the message: %i", numChar);
-	char lowerCaseMessage[255] = "lowercase message";
-	printf("\nConverting Letters: %s", lowerCaseMessage);
-	char decrypted[255] = "encrypted";
-	printf("\n\nYour encrypted text is:\n%s\n", decrypted);
-	char combo[255] = "combo";
-	printf("\nConcatenation of original and encrypted text: %s\n\n\n", combo);
+
+	printf("\nConverting Letters: ");
+        for(int i = 0; i < numChar; i++)
+        {
+            if(ray[i][0] > 64 && ray[i][0] < 91)
+                printf("%c", ray[i][0] + ('a'-'A'));
+            else
+                printf("%c", ray[i][0]);
+        }
+
+        printf("\n\nThe decrypted text is:\n");
+        for (int i = 0; i < numChar; i++)
+		printf("%c", ray[i][1]);
+	printf("\n\nConcatenation of original and decrypted text: ");
+        for(int i = 0; i < numChar; i++)
+            printf("%c", ray[i][0]);
+        for (int i = 0; i < numChar; i++)
+	    printf("%c", ray[i][1]);
+        printf("\n\n\n");
 }
 
 int validate(char* choice, int *k, int which)
@@ -196,7 +277,7 @@ int validate(char* choice, int *k, int which)
 		while ((temp = getchar()) != EOF && temp != '\n');
 		if (status != 1)
 		{
-			printf("Invalid message\n\n");
+			printf("\nInvalid message\n\n");
 			return 0;
 		}
 		for (int i = 0; i < 7; i++)
@@ -223,7 +304,7 @@ int validate(char* choice, int *k, int which)
 		while ((temp = getchar()) != EOF && temp != '\n');
 		if (status != 1)
 		{
-			printf("Invalid Key number\n\n");
+			printf("\nInvalid Key Number\n\n");
 			return 0;
 		}
 		if (*k < 1 || *k > 95)
@@ -260,20 +341,34 @@ int main()
 		which = validate(choice, &key, 1);
 		if (which == 0)
 		{
-			printf("Invalid message\n");
+			printf("\nInvalid message\n\n");
 			continue;
 		}
+                else if(which == 1)
+                {
+                        printf("\nEnter your message:\n");
+			int temp = scanf("%s", message);
+			printf("Enter the key number(1-95)\n");
+			if (validate(choice, &key, 2) != 1)
+			{
+				printf("\nInvalid Key Number\n\n");
+				continue;
+			}
+                }
+                else if(which == 2)
+                {
+			printf("Enter the key number(1-95)\n");
+			if (validate(choice, &key, 2) != 1)
+			{
+				printf("\nInvalid Key Number\n\n");
+				continue;
+			}
+                        printf("Enter your message:\n");
+			int temp = scanf("%s", message);
+                }
 		else if (which == 3)
 			break;
 
-		printf("\nEnter your message:\n");
-		int temp = scanf("%s", message);
-		printf("Enter the key number(1-95)\n");
-		if (validate(choice, &key, 2) != 1)
-		{
-			printf("Invalid key\n");
-			continue;
-		}
 		if (which == 1)
 			encrypt(message, key);
 		else if (which == 2)
@@ -281,6 +376,5 @@ int main()
 		else if (which == 3)
 			keepLooping = 0;
 	}
-	printf("Richard Miller Security Systems\n3-27-2019\n");
-
+	printf("\nRichard Miller Security Systems\n3-27-2019\n");
 }
