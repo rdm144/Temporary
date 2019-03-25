@@ -77,8 +77,15 @@ int main()
   {
 	char choice[255];
 	char message[255];
+	char encrypt[] = "encrypt";
+	char decrypt[] = "decrypt";
+	char exit[] = "exit";
 	int key;
 	int status;
+	int temp;
+	int isEncrypt = 1;
+	int isDecrypt = 1;
+	int isExit = 1;
 
     printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
 	status = scanf("%s", &choice);
@@ -106,12 +113,22 @@ int main()
 		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
 		status = scanf("%d", &key);
 	}
+	
+	for (int i = 0; i < 7; i++)
+		if (choice[i] != encrypt[i])
+			int isEncrypt = 0;
+	for (int i = 0; i < 7; i++)
+		if (choice[i] != decrypt[i])
+			int isDecrypt = 0;
+	for (int i = 0; i < 4; i++)
+		if (choice[i] != exit[i])
+			int isExit = 0;
 
-    if(choice == "encrypt")
+    if(isEncrypt == 1)
       encrypt(message, key);
-    else if(choice == "decrypt")
+    else if(isDecrypt == 1)
       decrypt(message, key);
-    else if(choice == "exit")
+    else if(isExit == 1)
       keepLooping = 0;
   }
   printf("Richard Miller Security Systems\n3-27-2019");
