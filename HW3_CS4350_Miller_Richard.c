@@ -51,8 +51,55 @@ void decrypt(char* message, int key)
   printf("Concatenation of original and encrypted text: %s\n\n", combo);
 }
 
-int validate(char* choice, int key)
+int validate(int which)
 {
+  char en[] = "encrypt";
+  char de[] = "decrypt";
+  char ex[] = "exit";
+  isEncrypt = 1;
+  isDecrypt = 1;
+  isExit = 1;
+  char temp;
+  switch (which)
+  {
+    case 1:
+		int status = scanf("%s", &choice);
+		while ((temp = getchar()) != EOF && temp != '\n');
+
+		if (status != 1)
+		{
+		  printf("Invalid message\n");
+		  return 0;
+		}
+
+	  for (int i = 0; i < 7; i++)
+		if (choice[i] != en[i])
+		  isEncrypt = 0;
+	  for (int i = 0; i < 7; i++)
+		if (choice[i] != de[i])
+		  isDecrypt = 0;
+	  for (int i = 0; i < 4; i++)
+	    if (choice[i] != ex[i])
+		  isExit = 0;
+	  if (isEncrypt == 0 && isDecrypt == 0 && isExit == 0)
+		return 0;
+	  else
+		return 1
+	  break;
+	case 2:
+		int status = scanf("%d", &key);
+		while ((temp = getchar()) != EOF && temp != '\n');
+		if (status != 1)
+		{
+			printf("Invalid message\n");
+			return 0;
+		}
+		if (key < 1 || key > 95)
+			return 0;
+		else
+			return 1;
+	  break;
+  }
 }
 
 int main()
@@ -77,55 +124,23 @@ int main()
   {
 	char choice[255];
 	char message[255];
-	char en[] = "encrypt";
-	char de[] = "decrypt";
-	char ex[] = "exit";
+	
 	int key;
 	int status;
 	int temp;
 	int isEncrypt;
 	int isDecrypt;
 	int isExit;
-	isEncrypt = 1;
-	isDecrypt = 1;
-	isExit = 1;
-
+	
     printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
-	status = scanf("%s", &choice);
-	while (status != 1)
-	{
-		while ((temp = getchar()) != EOF && temp != '\n');
-		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
-		status = scanf("%s", &choice);
-	}
+	if (validate(choice, key, 1) != 1)
+		continue;
 
     printf("Enter your message:\n");
-	status = scanf("%s", &message);
-	while (status != 1)
-	{
-		while ((temp = getchar()) != EOF && temp != '\n');
-		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
-		status = scanf("%s", &message);
-	}
 
     printf("Enter the key number(1-95)\n");
-	status = scanf("%d", &key);
-	while (status != 1)
-	{
-		while ((temp = getchar()) != EOF && temp != '\n');
-		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
-		status = scanf("%d", &key);
-	}
-
-	for (int i = 0; i < 7; i++)
-		if (choice[i] != en[i])
-			isEncrypt = 0;
-	for (int i = 0; i < 7; i++)
-		if (choice[i] != de[i])
-			isDecrypt = 0;
-	for (int i = 0; i < 4; i++)
-		if (choice[i] != ex[i])
-			isExit = 0;
+	if (validate(choice, key, 2) != 1)
+		continue;
 
     if(isEncrypt == 1)
       encrypt(message, key);
