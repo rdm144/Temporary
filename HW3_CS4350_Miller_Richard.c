@@ -60,20 +60,21 @@ void encrypt(char* message, int key)
 
 	char ray[255][2];
 	for (int i = 0; i < 255; i++)
-	{
-		for (int j = 0; j < 94; j++)
+		if (message[i] != 0)
+			ray[i][0] = message[i];
+		else
+			break;
+	for (int i = 0; i < 255; i++)
+		if (message[i] != 0)
 		{
-			if (message[i] == temp[j])
-			{
-				ray[i][0] = message[i];
-				int offset = j + key;
-				if (offset > 93)
-					offset = offset - 93;
-				ray[i][1] = temp[offset];
-				break;
-			}
+			int offset = i + key;
+			if (offset > 93)
+				offset = offset - 93;
+			ray[i][1] = temp[offset];
 		}
-	}
+		else
+			break;
+	printf("\nray: %s", ray);
 
 	int capitals = 0;
 	for (int i = 0; i < 255; i++)
@@ -117,16 +118,16 @@ void encrypt(char* message, int key)
 	char lowerCaseMessage[255];
 	for (int i = 0; i < 255; i++)
 	{
-                lowerCaseMessage[i] = message[i];
-		if (message[i] > 64 && message[i] < 91)
-			lowerCaseMessage[i] += 'a' - 'A';
+         lowerCaseMessage[i] = message[i];
+		 if (message[i] > 64 && message[i] < 91)
+			 lowerCaseMessage[i] += 'a' - 'A';
 	}
 	printf("\nConverting Letters: %s", lowerCaseMessage);
 
 	char encrypted[255];
 	for (int i = 0; i < 255; i++)
 	{
-                encrypted[i] = ray[i][1];
+           encrypted[i] = ray[i][1];
            printf("%c", ray[i][1]);
 	}
 	printf("\nThe decrypted text is:\n%s\n", encrypted);
