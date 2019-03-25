@@ -49,15 +49,6 @@ void encrypt(char* message, int key)
 	}
 	printf("\ntemp: %s", temp);
 	
-	int length = 0;
-	for (int i = 0; i < 255; i++)
-	{
-		if (message[i] == 0)
-			break;
-		else
-			length++;
-	}
-
 	char ray[255][2];
 	for (int i = 0; i < 255; i++)
 		if (message[i] != 0)
@@ -65,16 +56,21 @@ void encrypt(char* message, int key)
 		else
 			break;
 	for (int i = 0; i < 255; i++)
-		if (message[i] != 0)
+	{
+		for (int j = 0; j < 94; j++)
 		{
-			int offset = i + key;
-			if (offset > 93)
-				offset = offset - 93;
-			ray[i][1] = temp[offset];
+			if(message[i] == temp[j] && message[i] != 0)
+			{
+				int offset = j + key;
+				if (offset > 93)
+					offset -= 93;
+				ray[i][1] = temp[offset];
+			}
 		}
-		else
-			break;
-	printf("\nray: %s", ray);
+	}
+
+	for(int i = 0; i < 255; i++)
+		printf("%c, ", ray);
 
 	int capitals = 0;
 	for (int i = 0; i < 255; i++)
@@ -112,7 +108,14 @@ void encrypt(char* message, int key)
 	}
 	printf("\nNumber of Symbols: %i", symbols);
 
-	int numChar = length;
+	int numChar = 0;
+	for (int i = 0; i < 255; i++)
+	{
+		if (message[i] == 0)
+			break;
+		else
+			numChar++;
+	}
 	printf("\nNumber of Characters in the message: %i", numChar);
 
 	char lowerCaseMessage[255];
@@ -128,7 +131,6 @@ void encrypt(char* message, int key)
 	for (int i = 0; i < 255; i++)
 	{
            encrypted[i] = ray[i][1];
-           printf("%c", ray[i][1]);
 	}
 	printf("\nThe decrypted text is:\n%s\n", encrypted);
 
