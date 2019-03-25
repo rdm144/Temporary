@@ -77,9 +77,9 @@ int main()
   {
 	char choice[255];
 	char message[255];
-	char encrypt[] = "encrypt";
-	char decrypt[] = "decrypt";
-	char exit[] = "exit";
+	char en[] = "encrypt";
+	char de[] = "decrypt";
+	char ex[] = "exit";
 	int key;
 	int status;
 	int temp;
@@ -118,13 +118,13 @@ int main()
 	}
 
 	for (int i = 0; i < 7; i++)
-		if (choice[i] != encrypt[i])
+		if (choice[i] != en[i])
 			isEncrypt = 0;
 	for (int i = 0; i < 7; i++)
-		if (choice[i] != decrypt[i])
+		if (choice[i] != de[i])
 			isDecrypt = 0;
 	for (int i = 0; i < 4; i++)
-		if (choice[i] != exit[i])
+		if (choice[i] != ex[i])
 			isExit = 0;
 
     if(isEncrypt == 1)
