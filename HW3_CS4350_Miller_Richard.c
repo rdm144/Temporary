@@ -54,22 +54,34 @@ void decrypt(char* message, int key)
 int validate(char* choice, int key)
 {
   if(choice == "\0")
-	if(scanf("%s", choice) != 1)
+  {
+	int status;
+	int temp;
+	status = scanf("%s", &choice);
+	while ((temp = getchar()) != EOF && temp != '\n');
+	if (status != 1)
 	{
 	  printf("Invalid message");
 	  return 0;
 	}
+  }
   if(choice != "encrypt" && choice != "decrypt" && choice != "exit")
   {
     printf("Invalid message");
     return 0;
   }
   if (key == -1)
-    if (scanf("%s", choice) != 1)
-    {
-      printf("Invalid key");
+  {
+	int status;
+	int temp;
+	status = scanf("%d", &key);
+	while ((temp = getchar()) != EOF && temp != '\n');
+	if (status != 1)
+	{
+	  printf("Invalid key");
 	  return 0;
 	}
+  }
   if (key < 1 || key > 95)
   {
 	printf("Invalid Key");
@@ -80,6 +92,7 @@ int validate(char* choice, int key)
 
 int main()
 {
+	/*
 	int input, temp, status;
 
 	printf("Please enter a number: ");
@@ -91,7 +104,8 @@ int main()
 	}
 
 	printf("Your number is %d\n", input);
-  /*
+  */
+
   int keepLooping = 1;
   printf("Welcome to cryptography\n\n");
   while(keepLooping == 1)
@@ -120,5 +134,5 @@ int main()
       keepLooping = 0;
   }
   printf("Richard Miller Security Systems\n3-27-2019");
-  */
+  
 }
