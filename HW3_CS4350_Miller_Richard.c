@@ -116,16 +116,16 @@ int main()
 		printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
 		status = scanf("%d", &key);
 	}
-	
+
 	for (int i = 0; i < 7; i++)
 		if (choice[i] != encrypt[i])
-			int isEncrypt = 0;
+			isEncrypt = 0;
 	for (int i = 0; i < 7; i++)
 		if (choice[i] != decrypt[i])
-			int isDecrypt = 0;
+			isDecrypt = 0;
 	for (int i = 0; i < 4; i++)
 		if (choice[i] != exit[i])
-			int isExit = 0;
+			isExit = 0;
 
     if(isEncrypt == 1)
       encrypt(message, key);
