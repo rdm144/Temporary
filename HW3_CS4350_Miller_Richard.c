@@ -56,9 +56,7 @@ int validate(int which)
   char en[] = "encrypt";
   char de[] = "decrypt";
   char ex[] = "exit";
-  isEncrypt = 1;
-  isDecrypt = 1;
-  isExit = 1;
+  
   char temp;
   switch (which)
   {
@@ -131,15 +129,18 @@ int main()
 	int isEncrypt;
 	int isDecrypt;
 	int isExit;
-	
+	isEncrypt = 1;
+	isDecrypt = 1;
+	isExit = 1;
+
     printf("What would you like to do to a message?(encrypt, decrypt, exit)\nEnter your choice: ");
-	if (validate(choice, key, 1) != 1)
+	if (validate(1) != 1)
 		continue;
 
     printf("Enter your message:\n");
 
     printf("Enter the key number(1-95)\n");
-	if (validate(choice, key, 2) != 1)
+	if (validate(2) != 1)
 		continue;
 
     if(isEncrypt == 1)
