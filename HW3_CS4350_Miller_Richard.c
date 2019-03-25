@@ -98,6 +98,7 @@ int validate(char* choice, int *k, int which)
 			printf("Invalid message\n");
 			return 0;
 		}
+		printf("Let's go\n");
 		if (*k < 1 || *k > 95)
 			return 0;
 		else
@@ -108,7 +109,7 @@ int validate(char* choice, int *k, int which)
 
 int main()
 {
-	int *key;
+	int key;
 	int which;
 	int keepLooping = 1;
 	printf("Welcome to cryptography\n\n");
@@ -130,13 +131,11 @@ int main()
 		printf("Enter your message:\n");
 		scanf("%s", &message);
 		printf("Enter the key number(1-95)\n");
-		if (validate(choice, key, 2) != 1)
+		if (validate(choice, &key, 2) != 1)
 		{
 			printf("Invalid key\n");
 			continue;
 		}
-
-		printf("Let's go\n");
 		if (which == 1)
 			encrypt(message, key);
 		else if (which == 2)
@@ -144,6 +143,6 @@ int main()
 		else if (which == 3)
 			keepLooping = 0;
 	}
-	printf("Richard Miller Security Systems\n3-27-2019");
+	printf("Richard Miller Security Systems\n3-27-2019\n");
 
 }
