@@ -1,0 +1,29 @@
+------------Linear Regression Y1-----------
+Mean Absolute Error: 2.1533885104890516
+Mean Squared Error: 9.265535983151167
+Root Mean Squared Error: 3.0439342935009566
+Variance: 0.9118632205272034
+Cross validation scores: [0.81908216 0.90253344 0.91467238 0.91756955]
+R^2 regression score: 0.8981614623944544
+------------Linear Regression Y2-----------
+Mean Absolute Error: 2.1643245413136265
+Mean Squared Error: 9.645214799647043
+Root Mean Squared Error: 3.105674612648119
+Variance: 0.8930673422907859
+Cross validation scores: [0.83871505 0.88069015 0.88782895 0.88876312]
+R^2 regression score: 0.879727244754194
+------------Logistic Regression Y1-----------
+Mean Absolute Error: 3.593073593073593
+Mean Squared Error: 36.7965367965368
+Root Mean Squared Error: 6.066014902432799
+Variance: 0.645021645021645
+Cross validation scores: [0.52849741 0.64583333 0.65625    0.70157068]
+R^2 regression score: 0.6815808140707345
+------------Logistic Regression Y2-----------
+Mean Absolute Error: 2.813852813852814
+Mean Squared Error: 30.735930735930737
+Root Mean Squared Error: 5.543999525246258
+Variance: 0.7316017316017316
+Cross validation scores: [0.58549223 0.75520833 0.79166667 0.71204188]
+R^2 regression score: 0.6755986830364817
+
