@@ -64,14 +64,14 @@ void FCFS(double lamda, double avgServiceTime)
   Process* current = new Process(lamda, avgServiceTime, 0);
   Process* next = new Process(lamda, avgServiceTime, 1);
   Process Ready[1];
-  const int maxProc = 10;
+  const int maxProc = 10000;
   for(int i = 1; i < maxProc; i++)
   {
     start = std::chrono::system_clock::now();
     end = std::chrono::system_clock::now();
 
     // Wait until there is something in queue, and nothing is being serviced
-    while((Ready[0].id == -1) || (current->isDone == 0)) 
+    while((Ready[0].id == -1) || (current->isDone == 0))
     {
       if(current->isDone == 0) // Check if process has finished service
         service(start, end, current);
@@ -88,6 +88,37 @@ void FCFS(double lamda, double avgServiceTime)
   delete next;
 }
 
+void STRF(double l, double avgTs)
+{
+   int maxProc = 5;
+   for(int i = 0; i < maxProc; i++)
+   {
+     //while serviceTime > 0
+     //  service current proc
+     //    if serviceTime <= 0, break from while
+     //    else, serviceTime = serviceTime - tickTime
+     //  manage readyQ vector
+     //    if next arrival not met, wait
+     //    else, enqueue readyQ and make another next proc. Force readyQ and service evaluation.
+     //  clock tick
+     //    if tick = 0, evaluate readyQ and service
+     //then evaluate readyQ and service
+     //  find lowest serviceTime proc in service and readyQ
+     //  Set it as current
+     //  set older proc to back of readyQ vector
+   }
+}
+
+void NewEvaluate(Process* Ready) // for when a process is finished
+{
+  
+}
+
+void ForceEvaluate(Process* Ready, Process* current) // for a forced evaluation
+{
+
+}
+
 int main(int argc, char *argv[])
 {
   int whichSim = atoi(argv[1]);
@@ -100,6 +131,8 @@ int main(int argc, char *argv[])
     case 1:
       FCFS(lamda, avgServiceTime);
       break;
+    case 2:
+      STRF(lamda, avgServiceTime)
   }
 }
 
