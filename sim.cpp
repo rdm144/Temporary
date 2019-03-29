@@ -4,7 +4,7 @@
 #include <tgmath.h>
 #include <ctime>
 #include <chrono>
-#define NULL 0;
+#include <math.h>
 
 using namespace std;
 
@@ -16,62 +16,76 @@ class Process
   double serviceTime;
   int isDone;
 
-  public void Process(double l, double Ts, int i)
+  Process()
   {
-    double r = ((double) rand() / (RAND_MAX))
+    id = -1;
+    arrivalTime = 0;
+    serviceTime = 0;
+    isDone = false;
+  }
+
+  Process(double l, double Ts, int i)
+  {
+    double r = ((double) rand() / (RAND_MAX));
     arrivalTime = (log(1 - r)) / (-1 * l);
     double mu = 1 / Ts;
     serviceTime = (-1 / mu) * log10(r);
     isDone = 0;
     id = i;
-    printf("Creating process: %d\n", id);
+    printf("Creating process: %d. servTime: %f. arrTime: %f.\n", id, serviceTime, arrivalTime);
   }
 };
 
 // Services a process for one CPU tick
-void service(auto& start, auto& end, Process& p)
+void service(auto& start, auto& end, Process* p)
 {
-  if(end - start < p.serviceTime)
+  std::chrono::duration<double> elapsedTime = end - start;
+  if(elapsedTime.count() < p->serviceTime)
     end = std::chrono::system_clock::now();
   else
-    p.isDone = 1;
+    p->isDone = 1;
 }
 
 // Check every CPU tick until the arrival time has been reached
-void waitForArrival(auto& start, auto& end, Process& n, Process *Ready)
+void waitForArrival(auto& start, auto& end, Process* n, Process* Ready)
 {
-  if(end - start < n.arrivalTime)
+  std::chrono::duration<double> elapsedTime = end - start;
+  if(elapsedTime.count() < n->arrivalTime)
     end = std::chrono::system_clock::now();
   else
-    Ready[0] = n;
+    Ready[0] = *n;
 }
 
 // Simulate a First Come First Serve scheduler
 void FCFS(double lamda, double avgServiceTime)
 {
-  auto start;
-  auto end;
-  Process current = new Process(lamda, avgServiceTime, 0);
-  Process next = new Process(lamda, avgServiceTime, 1);
+  auto start = std::chrono::system_clock::now();
+  auto end = std::chrono::system_clock::now();
+  Process* current = new Process(lamda, avgServiceTime, 0);
+  Process* next = new Process(lamda, avgServiceTime, 1);
   Process Ready[1];
-  Ready[0] = NULL;
-  for(int i = 0; i < 10; i++)
+  const int maxProc = 10;
+  for(int i = 1; i < maxProc; i++)
   {
     start = std::chrono::system_clock::now();
     end = std::chrono::system_clock::now();
 
     // Wait until there is something in queue, and nothing is being serviced
-    while((Ready[0] != NULL) || (current.isDone == 0)) 
+    while((Ready[0].id == -1) || (current->isDone == 0)) 
     {
-      if(current.isDone == 0) // Check if process has finished service
+      if(current->isDone == 0) // Check if process has finished service
         service(start, end, current);
-      if(Ready[0] != next) // Check if there is a process in the ready queue
+      if(Ready[0].id == -1) // Check if there is a process in the ready queue
         waitForArrival(start, end, next, Ready);
     }
-    Ready[0] = NULL; // Dequeue the Ready Queue
+    Ready[0].id = -1; // Dequeue the Ready Queue
     current = next; // Set the serviced process as the next one in line
-    next = new Process(lamda, avgServiceTime, i+1); // Create a new process to arrive
+    if(i+1 < maxProc)
+      next = new Process(lamda, avgServiceTime, i+1); // Create a new process to arrive
   }
+
+  delete current;
+  delete next;
 }
 
 int main(int argc, char *argv[])
@@ -88,3 +102,4 @@ int main(int argc, char *argv[])
       break;
   }
 }
+
