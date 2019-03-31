@@ -113,18 +113,24 @@ void FCFS(double lamda, double avgServiceTime)
 
 void STRF(double lamda, double avgServiceTime)
 {
+  printf("STRF\n");
   const double interval = avgServiceTime;
   Process* current = new Process(lamda, avgServiceTime, 0);
-  Process* next = new Process(lamda, avgServiceTime, 1);
+  Process* enqueue = new Process(lamda, avgServiceTime, 1);
+  enqueue->hasArrived = 1;
+  Process* next = new Process(lamda, avgServiceTime, 2);
   vector<Process*> Ready;
   int maxProc = 5;
-  for(int i = 1; i < maxProc; i++)
+  Ready.push_back(enqueue);
+  for(int i = 2; i < maxProc; i++)
   {
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
     double clockTick = 0;
+    printf("Proc\n");
     while(current->isDone == 0)
     {
+      printf("while loop\n");
       STRFservice(clockTick, current); // service for one clock tick
       if(next->hasArrived == 0)
         STRFwait(start, end, next); // wait for next's arrival by one clock tick
