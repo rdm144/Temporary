@@ -183,7 +183,171 @@ void HRRN(double l, double ts)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void STRFservice(double tick, Process* p)
+{
+    if(p->serviceTime > 0)
+        p->serviceTime = p->serviceTime - tick;
+    else
+        p->isDone = 1;
+}
 
+void STRFEvaluate(std::vector<Process*>& Ready, Process* current, int useCurrent, int& candidates) // for when a process is finished
+{
+    int index = 0;
+    double lowest = 999;
+    if(useCurrent == 1 && current->serviceTime > 0)
+        Ready.push_back(current);// push current on to readyQ
+
+    for(int i = 0; i < Ready.size(); i++)
+    {
+      if(Ready[i]->id > -1)
+      {
+        if(Ready[i]->serviceTime < lowest)
+        {
+          index = i;
+          lowest = Ready[i]->serviceTime;
+        }
+      }
+    }
+    *current = *Ready[index]; // Set newly selected process as the next to be serviced
+    Ready[index]->id = -1; // remove the newly selected process from readyQ
+    candidates--;
+}
+
+void STRF(double l, double Ts)
+{
+    Process* current = new Process(l, Ts, 0);
+    Process* next = new Process(l, Ts, 1);
+    double clockTick = 0.001;
+    vector<Process*> Ready;
+    int candidates = 0;
+    for(int i = 0; i < 10000; i++)
+    {
+        auto start = std::chrono::system_clock::now();
+        auto end = std::chrono::system_clock::now();
+        while(current->isDone == 0)
+        {
+            STRFservice(clockTick, current);
+            next->ArrivalWait(clockTick);
+            if(next->hasArrived == 1)
+            {
+                Ready.push_back(next); // add next to readyQ
+                STRFEvaluate(Ready, current, 1, candidates); // force service evaluation
+                Process* temp = next;
+                next = new Process(l, Ts, temp->id + 1); // Create a new next process
+                candidates++;
+            }
+        }
+        while(candidates < 1)
+        {
+            next->ArrivalWait(clockTick);
+            if(next->hasArrived == 1)
+            {
+                Ready.push_back(next); // add next to readyQ
+                Process* temp = next;
+                next = new Process(l, Ts, temp->id + 1); // Create a new next process
+                candidates++;
+            }
+        }
+        STRFEvaluate(Ready, current, 0, candidates); // force service evaluation
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void RRservice(double tick, Process* p)
+{
+    if(p->serviceTime > 0)
+        p->serviceTime = p->serviceTime - tick;
+    else
+    {
+        printf("Process %d is done\n", p->id);
+        p->isDone = 1;
+        p->id = -1;
+    }
+}
+
+void RRevaluate(vector<Process*>& Ready, Process* current, int useCurrent, int& index, int& candidates)
+{
+  if(useCurrent == 1 && current->serviceTime > 0)
+    //Ready.push_back(current);
+  do{
+    index++;
+  }while(Ready[index]->id < 0);
+  
+  
+  if(index > Ready.size() - 1)
+    index = 0;
+  *current = *(Ready[index]);
+  candidates--;
+}
+
+void RR(double l, double ts, double mu)
+{
+  double currentTime = 0;
+  Process* current = new Process(l, ts, 0);
+  Process* next = new Process(l, ts, 1);
+  double clockTick = 0.001;
+  vector<Process*> Ready;
+  int candidates = 0;
+  int prevIndex = -1;
+  for(int i = 0; i < 10; i++)
+  {
+    printf("current id = %d\n", current->id);
+    while(true)
+    {
+      if(currentTime < mu)
+        currentTime += clockTick;
+      else
+      {
+        while(candidates < 1)
+        {
+          if(next->hasArrived == 0)
+            next->ArrivalWait(clockTick); //wait one tick
+          else
+          {
+            Ready.push_back(next); // Add next to readyQ
+            Process* temp = next;
+            next = new Process(l, ts, temp->id + 1);
+            candidates++;
+          }
+        }
+        RRevaluate(Ready, current, 1, prevIndex, candidates); //evaluate with current
+        currentTime = 0;
+      }
+        
+      if(next->hasArrived == 0)
+        next->ArrivalWait(clockTick); //wait one tick
+      else
+      {
+        Ready.push_back(next); // Add next to readyQ
+        Process* temp = next;
+        next = new Process(l, ts, temp->id + 1);
+        RRevaluate(Ready, current, 1, prevIndex, candidates); //evaluate with current
+      }
+        
+      if(current->isDone == 0)
+        RRservice(clockTick, current); //service
+      else
+      {
+        while(candidates < 1)
+        {
+          if(next->hasArrived == 0)
+            next->ArrivalWait(clockTick); //wait one tick
+          else
+          {
+            Ready.push_back(next); // Add next to readyQ
+            Process* temp = next;
+            next = new Process(l, ts, temp->id + 1);
+            candidates++;
+          }
+        }
+        RRevaluate(Ready, current, 0, prevIndex, candidates); //evaluate without current
+        break;
+      }
+    }
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -200,8 +364,13 @@ int main(int argc, char *argv[])
       FCFS(lamda, avgServiceTime);
       break;
     case 2:
+      STRF(lamda, avgServiceTime);
+      break;
+    case 3:
       HRRN(lamda, avgServiceTime);
       break;
+    case 4:
+      RR(lamda, avgServiceTime, quantum);
     default:
       break;
   }
