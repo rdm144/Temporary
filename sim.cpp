@@ -45,14 +45,13 @@ class Process
   Process(double l, double Ts, int i)
   {
     double r = ((double) rand() / (RAND_MAX));
-    arrivalTime = (log(1 - r)) / (-1 * l);
+    arrivalTime = (log(r)) / (-1 * l);
     double mu = 1 / Ts;
     serviceTime = (-1 / mu) * log10(r);
     isDone = 0;
     hasArrived = 0;
     waitTime = 0;
     id = i;
-    printf("Creating process: %d. servTime: %f. arrTime: %f.\n", id, serviceTime, arrivalTime);
   }
 
   void service(double tick)
@@ -115,6 +114,7 @@ void FCFSwaitForArrival(auto& start, auto& end, Process* n, Process* Ready)
 // Simulate a First Come First Serve scheduler
 void FCFS(double lamda, double avgServiceTime)
 {
+  printf("FCFS\n");
   EventQueue e;
   auto start = std::chrono::system_clock::now();
   auto startAbs = std::chrono::system_clock::now();
@@ -122,7 +122,7 @@ void FCFS(double lamda, double avgServiceTime)
   Process* current = new Process(lamda, avgServiceTime, 0);
   Process* next = new Process(lamda, avgServiceTime, 1);
   Process Ready[1];
-  const int maxProc = 10000;
+  const int maxProc = 10;
 
   e.serviceList[current->id] = current->serviceTime;
   e.waitList[current->id] = current->waitTime;
@@ -168,11 +168,8 @@ void FCFS(double lamda, double avgServiceTime)
     totalcpu = totalcpu + e.cpuUtilList[i];
   }
   ofstream data;
-  data.open("data.txt");
-  data << "FCFS lamda " << lamda << " average turnaround time: " << (totalService + totalWait)/10000 << endl;
-  data << "FCFS lamda " << lamda << " throughput: " << 10000/totalTime << endl;
-  data << "FCFS lamda " << lamda << " average cpu utilization: " << totalcpu << endl;
-  data << "FCFS lamda " << lamda << " average number of processes in ready queue: " << 1 << endl;
+  data.open("data.txt", ofstream::app);
+  data << "FCFS," << lamda << "," << (totalService + totalWait)/10000 << "," << 10000/totalTime << "," << totalcpu/10000 << "," << 1 << endl;
   data.close();
 }
 
@@ -204,6 +201,7 @@ void HRRNtickWaitTime(double tick, vector<Process*>& Ready)
 
 void HRRN(double l, double ts)
 {
+  printf("HRRN\n");
   EventQueue e;
   double clockTick = 0.001;
   vector<Process*> Ready;
@@ -265,11 +263,9 @@ void HRRN(double l, double ts)
     totalQ = totalQ + e.queueList[i];
   }
   ofstream data;
-  data.open("data.txt");
-  data << "HRRN lamda " << l << " average turnaround time: " << (totalService + totalWait)/10000 << endl;
-  data << "HRRN lamda " << l << " throughput: " << 10000/totalTime << endl;
-  data << "HRRN lamda " << l << " average cpu utilization: " << totalcpu << endl;
-  data << "HRRN lamda " << l << " average number of processes in ready queue: " << totalQ/10000 << endl;
+  data.open("data.txt", ofstream::app);
+  //type, lamda, avg turnaround, throughput, avg cpu, avg num proc in ready Q.
+  data << "HRRN," << l << "," << (totalService + totalWait)/10000 << "," << 10000/totalTime << "," << totalcpu/10000 << "," << totalQ/10000 << endl;
   data.close();
 }
 
@@ -308,6 +304,7 @@ void STRFEvaluate(std::vector<Process*>& Ready, Process* current, int useCurrent
 
 void STRF(double l, double Ts)
 {
+    printf("STRF\n");
     Process* current = new Process(l, Ts, 0);
     Process* next = new Process(l, Ts, 1);
     double clockTick = 0.001;
@@ -371,11 +368,9 @@ void STRF(double l, double Ts)
     totalQ = totalQ + e.queueList[i];
   }
   ofstream data;
-  data.open("data.txt");
-  data << "STRF lamda " << l << " average turnaround time: " << (totalService + totalWait)/10000 << endl;
-  data << "STRF lamda " << l << " throughput: " << 10000/totalTime << endl;
-  data << "STRF lamda " << l << " average cpu utilization: " << totalcpu << endl;
-  data << "STRF lamda " << l << " average number of processes in ready queue: " << totalQ/10000 << endl;
+  data.open("data.txt", ofstream::app);
+  //type, lamda, avg turnaround, throughput, avg cpu, avg num proc in ready Q.
+  data << "STRF," << l << "," << (totalService + totalWait)/10000 << "," << 10000/totalTime << "," << totalcpu/10000 << "," << totalQ/10000 << endl;
   data.close();
 }
 
@@ -387,7 +382,6 @@ void RRservice(double tick, Process* p)
         p->serviceTime = p->serviceTime - tick;
     else
     {
-        printf("Process %d is done\n", p->id);
         p->isDone = 1;
         p->id = -1;
     }
@@ -410,6 +404,7 @@ void RRevaluate(vector<Process*>& Ready, Process* current, int useCurrent, int& 
 
 void RR(double l, double ts, double mu)
 {
+  printf("RR\n");
   double currentTime = 0;
   Process* current = new Process(l, ts, 0);
   Process* next = new Process(l, ts, 1);
@@ -426,7 +421,6 @@ void RR(double l, double ts, double mu)
     auto startAbs = std::chrono::system_clock::now();
   for(int i = 0; i < 10000; i++)
   {
-    printf("current id = %d\n", current->id);
     while(true)
     {
       HRRNtickWaitTime(clockTick, Ready);
@@ -483,9 +477,12 @@ void RR(double l, double ts, double mu)
           }
         }
         RRevaluate(Ready, current, 0, prevIndex, candidates); //evaluate without current
-        break;
+        //break;
       }
+      
     }
+    e.queueList[i] = Ready.size();
+    e.cpuUtilList[i] = getCPU();
   }
   auto endAbs = std::chrono::system_clock::now();
   double totalTime = (endAbs - startAbs).count();
@@ -501,11 +498,9 @@ void RR(double l, double ts, double mu)
     totalQ = totalQ + e.queueList[i];
   }
   ofstream data;
-  data.open("data.txt");
-  data << "RR lamda " << l << " average turnaround time: " << (totalService + totalWait)/10000 << endl;
-  data << "RR lamda " << l << " throughput: " << 10000/totalTime << endl;
-  data << "RR lamda " << l << " average cpu utilization: " << totalcpu << endl;
-  data << "RR lamda " << l << " average number of processes in ready queue: " << totalQ/10000 << endl;
+  data.open("data.txt", ofstream::app);
+  //type, lamda, avg turnaround, throughput, avg cpu, avg num proc in ready Q.
+  data << "RR," << l << "," << (totalService + totalWait)/10000 << "," << 10000/totalTime << "," << totalcpu/10000 << "," << totalQ/10000 << endl;
   data.close();
 }
 
@@ -536,3 +531,4 @@ int main(int argc, char *argv[])
   }
   return 0;
 }
+
