@@ -127,16 +127,13 @@ void STRF(double lamda, double avgServiceTime)
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
     double clockTick = 0;
-    printf("Proc\n");
     while(current->isDone == 0)
     {
-      printf("while loop\n");
       STRFservice(clockTick, current); // service for one clock tick
       if(next->hasArrived == 0)
         STRFwait(start, end, next); // wait for next's arrival by one clock tick
       else
       {
-        printf("next has arrived\n");
         Ready.push_back(next); // add next to readyQ
         STRFEvaluate(Ready, current, 1); // force service evaluation
         Process* temp = next;
@@ -165,14 +162,14 @@ void STRFwait(auto& start, auto& end, Process* p)
   std::chrono::duration<double> elapsedTime = end - start;
   if(elapsedTime.count() < p->arrivalTime)
     end = std::chrono::system_clock::now();
-  else
-    p->hasArrived = 1;
+  else{
+    p->hasArrived = 1; }
 }
 
 void STRFEvaluate(std::vector<Process*> Ready, Process* current, int useCurrent) // for when a process is finished
 {
   Process* lowest;
-  int index = -1;
+  int index = 0;
   if(useCurrent == 1)
     Ready.push_back(current); // push current on to readyQ
   if(Ready.size() > 0)
