@@ -6,8 +6,21 @@
 #include <chrono>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <sys/types.h> 
+#include <sys/stat.h> 
+#include <fcntl.h>
+#include <unistd.h> 
 
 using namespace std;
+
+struct EventQueue
+{
+  double serviceList[10000];
+  double waitList[10000];
+  int queueList[10000];
+  int cpuUtilList[10000];
+};
 
 class Process
 {
@@ -62,6 +75,21 @@ class Process
   }
 };
 
+int getCPU() 
+{
+	int FileHandler;
+	char FileBuffer[1024];
+	float load;
+
+	FileHandler = open("/proc/loadavg", O_RDONLY);
+	if(FileHandler < 0) 
+    return -1; 
+  read(FileHandler, FileBuffer, sizeof(FileBuffer) - 1);
+  sscanf(FileBuffer, "%f", &load);
+	close(FileHandler);
+  return (int)(load * 100);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Services a process for one CPU tick
@@ -87,13 +115,20 @@ void FCFSwaitForArrival(auto& start, auto& end, Process* n, Process* Ready)
 // Simulate a First Come First Serve scheduler
 void FCFS(double lamda, double avgServiceTime)
 {
-  vector<string> Event;
+  EventQueue e;
   auto start = std::chrono::system_clock::now();
+  auto startAbs = std::chrono::system_clock::now();
   auto end = std::chrono::system_clock::now();
   Process* current = new Process(lamda, avgServiceTime, 0);
   Process* next = new Process(lamda, avgServiceTime, 1);
   Process Ready[1];
   const int maxProc = 10000;
+
+  e.serviceList[current->id] = current->serviceTime;
+  e.waitList[current->id] = current->waitTime;
+  e.serviceList[next->id] = next->serviceTime;
+  e.waitList[next->id] = next->waitTime;
+  e.cpuUtilList[0] = getCPU();
   for(int i = 1; i < maxProc; i++)
   {
     start = std::chrono::system_clock::now();
@@ -110,11 +145,35 @@ void FCFS(double lamda, double avgServiceTime)
     Ready[0].id = -1; // Dequeue the Ready Queue
     current = next; // Set the serviced process as the next one in line
     if(i+1 < maxProc)
+    {
       next = new Process(lamda, avgServiceTime, i+1); // Create a new process to arrive
+      e.serviceList[next->id] = next->serviceTime;
+      e.waitList[next->id] = next->waitTime;
+    }
+    e.cpuUtilList[i] = getCPU();
   }
 
   delete current;
   delete next;
+
+  auto endAbs = std::chrono::system_clock::now();
+  double totalTime = (endAbs - startAbs).count();
+  double totalService = 0;
+  double totalWait = 0;
+  int totalcpu = 0;
+  for(int i = 0; i < 10000; i++)
+  {
+    totalService = totalService + e.serviceList[i];
+    totalWait = totalWait + e.waitList[i];
+    totalcpu = totalcpu + e.cpuUtilList[i];
+  }
+  ofstream data;
+  data.open("data.txt");
+  data << "FCFS lamda " << lamda << " average turnaround time: " << (totalService + totalWait)/10000 << endl;
+  data << "FCFS lamda " << lamda << " throughput: " << 10000/totalTime << endl;
+  data << "FCFS lamda " << lamda << " average cpu utilization: " << totalcpu << endl;
+  data << "FCFS lamda " << lamda << " average number of processes in ready queue: " << 1 << endl;
+  data.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,11 +204,18 @@ void HRRNtickWaitTime(double tick, vector<Process*>& Ready)
 
 void HRRN(double l, double ts)
 {
+  EventQueue e;
   double clockTick = 0.001;
   vector<Process*> Ready;
   Process* current = new Process(l, ts, 0);
   Process* next = new Process(l, ts, 1);
   int candidates = 0;
+  e.serviceList[current->id] = current->serviceTime;
+  e.waitList[current->id] = current->waitTime;
+  e.serviceList[next->id] = next->serviceTime;
+  e.waitList[next->id] = next->waitTime;
+  e.cpuUtilList[0] = getCPU();
+  auto startAbs = std::chrono::system_clock::now();
   for(int i = 0; i < 10000; i++)
   {
     while(current->isDone == 0)
@@ -160,9 +226,11 @@ void HRRN(double l, double ts)
         next->ArrivalWait(clockTick);
       else
       {
+        e.waitList[next->id] = next->waitTime;
         Process* temp = next;
         Ready.push_back(temp);
         next = new Process(l, ts, temp->id+1);
+        e.serviceList[next->id] = next->serviceTime;
         candidates++;
       }
     }
@@ -171,14 +239,38 @@ void HRRN(double l, double ts)
       next->ArrivalWait(clockTick);
       if(next->hasArrived == 1)
       {
+        e.waitList[next->id] = next->waitTime;
         Process* temp = next;
         Ready.push_back(temp);
         next = new Process(l, ts, temp->id+1);
+        e.serviceList[next->id] = next->serviceTime;
         candidates++;
       }
     }
     HRRNevaluate(current, Ready, candidates);
+    e.queueList[i] = Ready.size();
+    e.cpuUtilList[i] = getCPU();
   }
+  auto endAbs = std::chrono::system_clock::now();
+  double totalTime = (endAbs - startAbs).count();
+  double totalService = 0;
+  double totalWait = 0;
+  int totalcpu = 0;
+  int totalQ = 0;
+  for(int i = 0; i < 10000; i++)
+  {
+    totalService = totalService + e.serviceList[i];
+    totalWait = totalWait + e.waitList[i];
+    totalcpu = totalcpu + e.cpuUtilList[i];
+    totalQ = totalQ + e.queueList[i];
+  }
+  ofstream data;
+  data.open("data.txt");
+  data << "HRRN lamda " << l << " average turnaround time: " << (totalService + totalWait)/10000 << endl;
+  data << "HRRN lamda " << l << " throughput: " << 10000/totalTime << endl;
+  data << "HRRN lamda " << l << " average cpu utilization: " << totalcpu << endl;
+  data << "HRRN lamda " << l << " average number of processes in ready queue: " << totalQ/10000 << endl;
+  data.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,6 +313,13 @@ void STRF(double l, double Ts)
     double clockTick = 0.001;
     vector<Process*> Ready;
     int candidates = 0;
+    EventQueue e;
+    e.serviceList[current->id] = current->serviceTime;
+    e.waitList[current->id] = current->waitTime;
+    e.serviceList[next->id] = next->serviceTime;
+    e.waitList[next->id] = next->waitTime;
+    e.cpuUtilList[0] = getCPU();
+    auto startAbs = std::chrono::system_clock::now();
     for(int i = 0; i < 10000; i++)
     {
         auto start = std::chrono::system_clock::now();
@@ -228,13 +327,16 @@ void STRF(double l, double Ts)
         while(current->isDone == 0)
         {
             STRFservice(clockTick, current);
+            HRRNtickWaitTime(clockTick, Ready);
             next->ArrivalWait(clockTick);
             if(next->hasArrived == 1)
             {
+                e.waitList[next->id] = next->waitTime;
                 Ready.push_back(next); // add next to readyQ
                 STRFEvaluate(Ready, current, 1, candidates); // force service evaluation
                 Process* temp = next;
                 next = new Process(l, Ts, temp->id + 1); // Create a new next process
+                e.serviceList[next->id] = next->serviceTime;
                 candidates++;
             }
         }
@@ -243,14 +345,38 @@ void STRF(double l, double Ts)
             next->ArrivalWait(clockTick);
             if(next->hasArrived == 1)
             {
+                e.waitList[next->id] = next->waitTime;
                 Ready.push_back(next); // add next to readyQ
                 Process* temp = next;
                 next = new Process(l, Ts, temp->id + 1); // Create a new next process
+                e.serviceList[next->id] = next->serviceTime;
                 candidates++;
             }
         }
         STRFEvaluate(Ready, current, 0, candidates); // force service evaluation
+        e.queueList[i] = Ready.size();
+        e.cpuUtilList[i] = getCPU();
     }
+  auto endAbs = std::chrono::system_clock::now();
+  double totalTime = (endAbs - startAbs).count();
+  double totalService = 0;
+  double totalWait = 0;
+  int totalcpu = 0;
+  int totalQ = 0;
+  for(int i = 0; i < 10000; i++)
+  {
+    totalService = totalService + e.serviceList[i];
+    totalWait = totalWait + e.waitList[i];
+    totalcpu = totalcpu + e.cpuUtilList[i];
+    totalQ = totalQ + e.queueList[i];
+  }
+  ofstream data;
+  data.open("data.txt");
+  data << "STRF lamda " << l << " average turnaround time: " << (totalService + totalWait)/10000 << endl;
+  data << "STRF lamda " << l << " throughput: " << 10000/totalTime << endl;
+  data << "STRF lamda " << l << " average cpu utilization: " << totalcpu << endl;
+  data << "STRF lamda " << l << " average number of processes in ready queue: " << totalQ/10000 << endl;
+  data.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -291,11 +417,19 @@ void RR(double l, double ts, double mu)
   vector<Process*> Ready;
   int candidates = 0;
   int prevIndex = -1;
-  for(int i = 0; i < 10; i++)
+  EventQueue e;
+    e.serviceList[current->id] = current->serviceTime;
+    e.waitList[current->id] = current->waitTime;
+    e.serviceList[next->id] = next->serviceTime;
+    e.waitList[next->id] = next->waitTime;
+    e.cpuUtilList[0] = getCPU();
+    auto startAbs = std::chrono::system_clock::now();
+  for(int i = 0; i < 10000; i++)
   {
     printf("current id = %d\n", current->id);
     while(true)
     {
+      HRRNtickWaitTime(clockTick, Ready);
       if(currentTime < mu)
         currentTime += clockTick;
       else
@@ -306,10 +440,12 @@ void RR(double l, double ts, double mu)
             next->ArrivalWait(clockTick); //wait one tick
           else
           {
+            e.waitList[next->id] = next->waitTime;
             Ready.push_back(next); // Add next to readyQ
             Process* temp = next;
             next = new Process(l, ts, temp->id + 1);
             candidates++;
+            e.serviceList[next->id] = next->serviceTime;
           }
         }
         RRevaluate(Ready, current, 1, prevIndex, candidates); //evaluate with current
@@ -320,9 +456,11 @@ void RR(double l, double ts, double mu)
         next->ArrivalWait(clockTick); //wait one tick
       else
       {
+        e.waitList[next->id] = next->waitTime;
         Ready.push_back(next); // Add next to readyQ
         Process* temp = next;
         next = new Process(l, ts, temp->id + 1);
+        e.serviceList[next->id] = next->serviceTime;
         RRevaluate(Ready, current, 1, prevIndex, candidates); //evaluate with current
       }
         
@@ -336,10 +474,12 @@ void RR(double l, double ts, double mu)
             next->ArrivalWait(clockTick); //wait one tick
           else
           {
+            e.waitList[next->id] = next->waitTime;
             Ready.push_back(next); // Add next to readyQ
             Process* temp = next;
             next = new Process(l, ts, temp->id + 1);
             candidates++;
+            e.serviceList[next->id] = next->serviceTime;
           }
         }
         RRevaluate(Ready, current, 0, prevIndex, candidates); //evaluate without current
@@ -347,6 +487,26 @@ void RR(double l, double ts, double mu)
       }
     }
   }
+  auto endAbs = std::chrono::system_clock::now();
+  double totalTime = (endAbs - startAbs).count();
+  double totalService = 0;
+  double totalWait = 0;
+  int totalcpu = 0;
+  int totalQ = 0;
+  for(int i = 0; i < 10000; i++)
+  {
+    totalService = totalService + e.serviceList[i];
+    totalWait = totalWait + e.waitList[i];
+    totalcpu = totalcpu + e.cpuUtilList[i];
+    totalQ = totalQ + e.queueList[i];
+  }
+  ofstream data;
+  data.open("data.txt");
+  data << "RR lamda " << l << " average turnaround time: " << (totalService + totalWait)/10000 << endl;
+  data << "RR lamda " << l << " throughput: " << 10000/totalTime << endl;
+  data << "RR lamda " << l << " average cpu utilization: " << totalcpu << endl;
+  data << "RR lamda " << l << " average number of processes in ready queue: " << totalQ/10000 << endl;
+  data.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
