@@ -4,7 +4,6 @@
 #include <math.h>
 #include <ctime>
 #include <chrono>
-#include <math.h>
 #include <vector>
 
 using namespace std;
@@ -116,13 +115,11 @@ void STRF(double lamda, double avgServiceTime)
   printf("STRF\n");
   const double interval = avgServiceTime;
   Process* current = new Process(lamda, avgServiceTime, 0);
-  Process* enqueue = new Process(lamda, avgServiceTime, 1);
-  enqueue->hasArrived = 1;
-  Process* next = new Process(lamda, avgServiceTime, 2);
+  Process* next = new Process(lamda, avgServiceTime, 1);
   vector<Process*> Ready;
   int maxProc = 5;
   Ready.push_back(enqueue);
-  for(int i = 2; i < maxProc; i++)
+  for(int i = 1; i < maxProc; i++)
   {
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
@@ -401,4 +398,5 @@ int main(int argc, char *argv[])
     default:
       break;
   }
+  return 0;
 }
