@@ -5,6 +5,9 @@
 #include <ctime>
 #include <chrono>
 #include <math.h>
+#include <vector>
+
+
 
 using namespace std;
 
@@ -41,6 +44,18 @@ class Process
     printf("Creating process: %d. servTime: %f. arrTime: %f.\n", id, serviceTime, arrivalTime);
   }
 };
+
+void STRFservice(double, Process*);
+void STRFwait(auto&, auto&, Process*);
+void STRFEvaluate(std::vector<Process*>, Process*, int);
+void HRRNservice(auto&, auto&, Process*);
+void HRRNwait(auto&, auto&, Process*);
+void HRRNtickWait(double, std::vector<Process*>);
+void HRRNEvaluate(std::vector<Process*>, Process*);
+void RRservice(double, Process*);
+void RRwait(auto&, auto&, Process*);
+void RREvaluate(std::vector<Process*>, Process*, int);
+void RRtickClock(double, double&, int&, double);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -98,12 +113,12 @@ void FCFS(double lamda, double avgServiceTime)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void STRF(double l, double avgTs)
+void STRF(double lamda, double avgServiceTime)
 {
-  const double interval = avgTs;
-  Process* current = new Process(lamda, avgServiceTime, i);
-  Process* next = new Process(lamda, avgServiceTime, i+1);
-  vector<Process*> Ready[];
+  const double interval = avgServiceTime;
+  Process* current = new Process(lamda, avgServiceTime, 0);
+  Process* next = new Process(lamda, avgServiceTime, 1);
+  vector<Process*> Ready;
   int maxProc = 5;
   for(int i = 1; i < maxProc; i++)
   {
@@ -143,15 +158,15 @@ void STRFservice(double tick, Process* p)
 void STRFwait(auto& start, auto& end, Process* p)
 {
   std::chrono::duration<double> elapsedTime = end - start;
-  if(elapsedTime.count() < n->arrivalTime)
+  if(elapsedTime.count() < p->arrivalTime)
     end = std::chrono::system_clock::now();
   else
     p->hasArrived = 1;
 }
 
-void STRFEvaluate(Process* Ready, Process* current, int useCurrent) // for when a process is finished
+void STRFEvaluate(std::vector<Process*> Ready, Process* current, int useCurrent) // for when a process is finished
 {
-  Process lowest;
+  Process* lowest;
   int index = -1;
   if(useCurrent == 1)
     Ready.push_back(current); // push current on to readyQ
@@ -170,12 +185,12 @@ void STRFEvaluate(Process* Ready, Process* current, int useCurrent) // for when 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void HRRN(double l, double avgTs)
+void HRRN(double lamda, double avgServiceTime)
 {
-  const double interval = avgTs;
-  Process* current = new Process(lamda, avgServiceTime, i);
-  Process* next = new Process(lamda, avgServiceTime, i+1);
-  vector<Process*> Ready[];
+  const double interval = avgServiceTime;
+  Process* current = new Process(lamda, avgServiceTime, 0);
+  Process* next = new Process(lamda, avgServiceTime, 1);
+  vector<Process*> Ready;
   int maxProc = 5;
   for(int i = 1; i < maxProc; i++)
   {
@@ -184,7 +199,7 @@ void HRRN(double l, double avgTs)
     double clockTick = 0;
     while(current->isDone == 0)
     {
-      HRRNservice(current); // service for one clock tick.
+      HRRNservice(start, end, current); // service for one clock tick.
       if(next->hasArrived == 0)
         HRRNwait(start, end, next); // wait for next's arrival by one clock tick
       else
@@ -216,13 +231,13 @@ void HRRNservice(auto& start, auto& end, Process* p)
 void HRRNwait(auto& start, auto& end, Process* p)
 {
   std::chrono::duration<double> elapsedTime = end - start;
-  if(elapsedTime.count() < n->arrivalTime)
+  if(elapsedTime.count() < p->arrivalTime)
     end = std::chrono::system_clock::now();
   else
     p->hasArrived = 1;
 }
 
-void HRRNtickWait(double tick, Process* Ready)
+void HRRNtickWait(double tick, std::vector<Process*> Ready)
 {
   for(int i = 0; i < Ready.size(); i++)
   {
@@ -239,9 +254,9 @@ void HRRNtickClock(auto& start, auto& end, int& interrupt, double interval)
     end = std::chrono::system_clock::now();
 }
 
-void HRRNEvaluate(Process* Ready, Process* current) // for when a process is finished
+void HRRNEvaluate(std::vector<Process*> Ready, Process* current) // for when a process is finished
 {
-  Process selected;
+  Process* selected;
   int index = -1;
   double highestRatio = 0;
   selected = Ready[0];
@@ -261,14 +276,14 @@ void HRRNEvaluate(Process* Ready, Process* current) // for when a process is fin
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void RR(double l, double mu)
+void RR(double lamda, double avgServiceTime, double mu)
 {
   const double interval = mu;
   double timeSinceInterrupt = 0;
   int interrupt = 0;
-  Process* current = new Process(lamda, avgServiceTime, i);
-  Process* next = new Process(lamda, avgServiceTime, i+1);
-  vector<Process*> Ready[];
+  Process* current = new Process(lamda, avgServiceTime, 0);
+  Process* next = new Process(lamda, avgServiceTime, 1);
+  vector<Process*> Ready;
   int maxProc = 5;
   for(int i = 1; i < maxProc; i++)
   {
@@ -289,7 +304,7 @@ void RR(double l, double mu)
         delete temp;
       }
 
-      RRtickClock(clockTick, *timeSinceInterrupt, *interrupt, mu);
+      RRtickClock(clockTick, timeSinceInterrupt, interrupt, interval);
       if(interrupt == 1)
       {
         RREvaluate(Ready, current, 1); // force service evaluation
@@ -304,12 +319,12 @@ void RR(double l, double mu)
   delete next;
 }
 
-void RRtickClock(double tick, double& currentTime, double& interrupt, double quantum)
+void RRtickClock(double tick, double& currentTime, int& interrupt, double quantum)
 {
   currentTime += tick;
   if(currentTime >= quantum)
   {
-    interrupt = true;
+    interrupt = 1;
     currentTime = 0;
   }
 }
@@ -324,15 +339,15 @@ void RRservice(double tick, Process* p)
 void RRwait(auto& start, auto& end, Process* p)
 {
   std::chrono::duration<double> elapsedTime = end - start;
-  if(elapsedTime.count() < n->arrivalTime)
+  if(elapsedTime.count() < p->arrivalTime)
     end = std::chrono::system_clock::now();
   else
     p->hasArrived = 1;
 }
 
-void RREvaluate(Process* Ready, Process* current, int useCurrent) // for when a process is finished
+void RREvaluate(std::vector<Process*> Ready, Process* current, int useCurrent) // for when a process is finished
 {
-  Process lowest;
+  Process* lowest;
   int index = -1;
   if(useCurrent == 1)
     Ready.push_back(current); // push current on to readyQ
@@ -370,10 +385,11 @@ int main(int argc, char *argv[])
       HRRN(lamda, avgServiceTime);
       break;
     case 4:
-      RR(lamda, mu);
+      RR(lamda, avgServiceTime, quantum);
       break;
     default:
       break;
   }
 }
+
 
