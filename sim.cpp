@@ -130,6 +130,7 @@ void STRF(double lamda, double avgServiceTime)
         STRFwait(start, end, next); // wait for next's arrival by one clock tick
       else
       {
+        printf("next has arrived\n");
         Ready.push_back(next); // add next to readyQ
         STRFEvaluate(Ready, current, 1); // force service evaluation
         Process* temp = next;
