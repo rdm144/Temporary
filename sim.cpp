@@ -508,7 +508,7 @@ void RR(double l, double ts, double mu)
 
 int main(int argc, char *argv[])
 {
-  if(argc < 5){printf("Parameters: scheduler number (1-4), lambda, Average Service Time, and RR quantum."); exit(-1);}
+  if(argc < 5){printf("Parameters: scheduler number (1-4), lambda, Average Service Time, and RR quantum.\n"); exit(-1);}
   int whichSim = atoi(argv[1]);
   double lamda = atof(argv[2]);
   double avgServiceTime = atof(argv[3]);
