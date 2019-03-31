@@ -1,13 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdlib>
-#include <tgmath.h>
+#include <math.h>
 #include <ctime>
 #include <chrono>
 #include <math.h>
 #include <vector>
-
-
 
 using namespace std;
 
@@ -170,17 +168,20 @@ void STRFEvaluate(std::vector<Process*> Ready, Process* current, int useCurrent)
   int index = -1;
   if(useCurrent == 1)
     Ready.push_back(current); // push current on to readyQ
-  lowest = Ready[0];
-  for(int i = 0; i < Ready.size(); i++)
+  if(Ready.size() > 0)
   {
-    if(Ready[i]->serviceTime < lowest->serviceTime)
+    lowest = Ready[0];
+    for(int i = 0; i < Ready.size(); i++)
     {
-      lowest = Ready[i];
-      index = i;
+      if(Ready[i]->serviceTime < lowest->serviceTime)
+      {
+        lowest = Ready[i];
+        index = i;
+      }
     }
+    current = lowest; // Set newly selected process as the next to be serviced
+    Ready.erase(Ready.begin()+index); // remove the newly selected process from readyQ
   }
-  current = lowest; // Set newly selected process as the next to be serviced
-  Ready.erase(Ready.begin()+index); // remove the newly selected process from readyQ
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -259,19 +260,22 @@ void HRRNEvaluate(std::vector<Process*> Ready, Process* current) // for when a p
   Process* selected;
   int index = -1;
   double highestRatio = 0;
-  selected = Ready[0];
-  for(int i = 0; i < Ready.size(); i++)
+  if(Ready.size() > 0)
   {
-    double tempRatio = (Ready[i]->waitTime + Ready[i]->serviceTime) / Ready[i]->serviceTime;
-    if(tempRatio > highestRatio)
+    selected = Ready[0];
+    for(int i = 0; i < Ready.size(); i++)
     {
-      highestRatio = tempRatio;
-      selected = Ready[i];
-      index = i;
+      double tempRatio = (Ready[i]->waitTime + Ready[i]->serviceTime) / Ready[i]->serviceTime;
+      if(tempRatio > highestRatio)
+      {
+        highestRatio = tempRatio;
+        selected = Ready[i];
+        index = i;
+      }
     }
+    current = selected; // Set newly selected process as the next to be serviced
+    Ready.erase(Ready.begin()+index); // remove the newly selected process from readyQ
   }
-  current = selected; // Set newly selected process as the next to be serviced
-  Ready.erase(Ready.begin()+index); // remove the newly selected process from readyQ
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -351,17 +355,20 @@ void RREvaluate(std::vector<Process*> Ready, Process* current, int useCurrent) /
   int index = -1;
   if(useCurrent == 1)
     Ready.push_back(current); // push current on to readyQ
-  lowest = Ready[0];
-  for(int i = 0; i < Ready.size(); i++)
+  if(Ready.size() > 0)
   {
-    if(Ready[i]->serviceTime < lowest->serviceTime)
+    lowest = Ready[0];
+    for(int i = 0; i < Ready.size(); i++)
     {
-      lowest = Ready[i];
-      index = i;
+      if(Ready[i]->serviceTime < lowest->serviceTime)
+      {
+        lowest = Ready[i];
+        index = i;
+      }
     }
+    current = lowest; // Set newly selected process as the next to be serviced
+    Ready.erase(Ready.begin()+index); // remove the newly selected process from readyQ
   }
-  current = lowest; // Set newly selected process as the next to be serviced
-  Ready.erase(Ready.begin()+index); // remove the newly selected process from readyQ
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -391,5 +398,3 @@ int main(int argc, char *argv[])
       break;
   }
 }
-
-
